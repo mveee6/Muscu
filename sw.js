@@ -1,4 +1,4 @@
-const CACHE = 'muscu-v2';
+const CACHE = 'muscu-v3';
 const FILES = ['./', './index.html', './manifest.json', './icon-512.png'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
