@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plan muscu maison</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Muscu">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#EEF2F5">
+<link rel="apple-touch-icon" href="icon-512.png">
+<link rel="icon" type="image/png" href="icon-512.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --board:#EEF2F5; --paper:#FFFFFF; --ink:#1C2B4B; --soft:#56657F; --line:#D3DBE3;
+  --push:#D22F3C; --pull:#2764C8; --legs:#178A52; --hl:#FFE14D;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Barlow,system-ui,sans-serif;background:var(--board);color:var(--ink);font-size:17px;line-height:1.5;padding-bottom:calc(86px + env(safe-area-inset-bottom))}
+h1,h2,h3,.cond{font-family:"Barlow Condensed",Barlow,sans-serif;line-height:1.05}
+header,main{max-width:520px;margin:0 auto;padding:0 18px}
+header{padding-top:calc(30px + env(safe-area-inset-top))}
+h1{font-size:46px;font-weight:800;letter-spacing:-.5px}
+header p{color:var(--soft);margin-top:6px}
+h2{font-size:31px;font-weight:700;margin:32px 0 12px}
+h3{font-size:23px;font-weight:700;margin:24px 0 8px}
+p+p{margin-top:8px}
+b{font-weight:600}
+.muted{color:var(--soft);font-size:15px;margin-top:8px}
+.hl{background:linear-gradient(transparent 52%,var(--hl) 52%,var(--hl) 94%,transparent 94%);padding:0 2px}
+section[hidden]{display:none}
+ul.plain{list-style:none}
+ul.plain li{padding:5px 0 5px 18px;position:relative}
+ul.plain li::before{content:"";position:absolute;left:2px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--ink)}
+
+/* planning */
+.week{display:grid;grid-template-columns:62px repeat(3,1fr);gap:7px;align-items:center}
+.week span{font-weight:600;font-size:15px;color:var(--soft);text-align:center}
+.week span.row{text-align:left}
+.week b{font-family:"Barlow Condensed";font-weight:800;font-size:30px;text-align:center;border:2.5px solid var(--ink);border-radius:10px;padding:4px 0;background:var(--paper)}
+.week b.B{background:var(--ink);color:var(--paper)}
+
+.rules{list-style:none;border-left:5px solid var(--ink);padding-left:14px}
+.rules li{padding:5px 0}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:15px;margin-bottom:6px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+
+/* exercises */
+.session{background:var(--paper);border-radius:14px;overflow:hidden}
+.ex{border-left:7px solid var(--c)}
+.ex+.ex{border-top:1px solid var(--line)}
+.ex summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:13px 14px}
+.ex summary::-webkit-details-marker{display:none}
+.ex .n{font-family:"Barlow Condensed";font-weight:700;font-size:20px;color:var(--soft);min-width:12px}
+.ex .t{flex:1;font-weight:600;line-height:1.25}
+.ex .s{font-family:"Barlow Condensed";font-weight:700;font-size:21px;white-space:nowrap}
+.ex summary::after{content:"+";font-size:22px;color:var(--soft);width:14px;text-align:center}
+.ex[open] summary::after{content:"–"}
+.ex .body{padding:0 16px 16px 38px;font-size:16px}
+.steps{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:10px;font-size:14px}
+.steps em{font-style:normal;border:1.5px solid var(--c);border-radius:20px;padding:1px 10px}
+.steps em:last-child{background:var(--c);color:#fff}
+.steps i{font-style:normal;color:var(--soft)}
+
+/* targets */
+.targets{background:var(--paper);border-radius:14px;padding:6px 16px}
+.targets div{display:flex;align-items:baseline;gap:8px;padding:10px 0}
+.targets div+div{border-top:1px solid var(--line)}
+.targets .k{font-weight:600}
+.targets .dots{flex:1;border-bottom:2px dotted var(--line);transform:translateY(-4px)}
+.targets .v{font-family:"Barlow Condensed";font-weight:800;font-size:28px}
+
+/* tables */
+table{width:100%;border-collapse:collapse;background:var(--paper);border-radius:14px;overflow:hidden;font-size:15px}
+th,td{text-align:left;padding:9px 10px;vertical-align:top}
+th{font-weight:600;color:var(--soft);font-size:14px;background:#F6F8FA}
+tr+tr td{border-top:1px solid var(--line)}
+td.r,th.r{text-align:right;white-space:nowrap}
+tfoot td{font-weight:600;border-top:2px solid var(--ink)}
+
+/* shakes */
+.tips{background:var(--paper);border-radius:14px;padding:12px 16px}
+.shake{background:var(--paper);border-radius:14px;margin-top:16px;overflow:hidden;border-top:10px solid var(--f)}
+.shake .head{padding:14px 16px 4px}
+.shake h3{margin:0;font-size:27px}
+.shake .macro{margin-top:4px;font-weight:600}
+.shake ul{list-style:none;padding:6px 16px 4px}
+.shake li{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid var(--line)}
+.shake li:last-child{border-bottom:0}
+.shake li span:last-child{font-weight:600;white-space:nowrap}
+.shake .note{padding:4px 16px 14px;font-size:15px;color:var(--soft)}
+
+.box{background:var(--paper);border-radius:14px;padding:14px 16px}
+.box+.box{margin-top:12px}
+.box h3{margin-top:0}
+.no{border-left:5px solid var(--push)}
+
+footer{max-width:520px;margin:36px auto 0;padding:0 18px;color:var(--soft);font-size:14px}
+
+/* nav */
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--ink);padding:8px 8px calc(8px + env(safe-area-inset-bottom))}
+nav div{display:flex;gap:4px;max-width:520px;margin:0 auto}
+nav button{flex:1;background:none;border:0;color:#B4C0D6;font:600 15px Barlow,sans-serif;padding:11px 2px;border-radius:10px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--hl);color:var(--ink)}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--pull);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Plan muscu maison</h1>
+  <p>1,76 m, 63 kg. Objectif : prendre du muscle en restant sec, priorité au haut du corps.</p>
+</header>
+
+<main>
+
+<!-- ============ SÉANCES ============ -->
+<section id="seances" role="tabpanel" aria-labelledby="t-seances">
+  <h2>Planning</h2>
+  <div class="week">
+    <span></span><span>Lun</span><span>Mer</span><span>Ven</span>
+    <span class="row">Sem. 1</span><b>A</b><b class="B">B</b><b>A</b>
+    <span class="row">Sem. 2</span><b class="B">B</b><b>A</b><b class="B">B</b>
+  </div>
+  <p class="muted">Puis tu recommences. Les jours peuvent changer, mais jamais deux séances d'affilée.</p>
+
+  <h2>Les règles</h2>
+  <ul class="rules">
+    <li><b>6 à 15 reps</b> par série, arrête-toi à <span class="hl">1 à 3 reps de l'échec</span></li>
+    <li><b>1 min 30</b> de repos entre les séries</li>
+    <li>Descente lente, <b>environ 3 secondes</b></li>
+    <li>Tu fais <span class="hl">3 x 15 propres</span> : passe à la variante suivante ou ajoute le sac lesté</li>
+    <li>Note tes reps à chaque séance</li>
+    <li>Après 4 à 6 semaines : <b>+1 série</b> par exercice</li>
+  </ul>
+
+  <h2>Séance A</h2>
+  <div class="legend">
+    <span><i style="background:var(--push)"></i>Poussée</span>
+    <span><i style="background:var(--pull)"></i>Tirage</span>
+    <span><i style="background:var(--legs)"></i>Jambes et gainage</span>
+  </div>
+  <div class="session">
+    <details class="ex" style="--c:var(--push)">
+      <summary><span class="n">1</span><span class="t">Pompes, descente en 3 s</span><span class="s">4 séries</span></summary>
+      <div class="body">
+        <p>Mains un peu plus larges que les épaules, corps gainé comme une planche. Descends en 3 secondes jusqu'à frôler le sol, puis remonte.</p>
+        <div class="steps"><em>Sur les genoux</em><i>›</i><em>Classiques</em><i>›</i><em>Pieds surélevés</em><i>›</i><em>Avec sac lesté</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--pull)">
+      <summary><span class="n">2</span><span class="t">Rowing inversé</span><span class="s">4 séries</span></summary>
+      <div class="body">
+        <p>Allongé sous une table <b>très solide</b>, mains au bord. Corps droit, tire ta poitrine vers la table en serrant les omoplates, puis redescends lentement.</p>
+        <div class="steps"><em>Genoux pliés</em><i>›</i><em>Jambes tendues</em><i>›</i><em>Pieds surélevés</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--push)">
+      <summary><span class="n">3</span><span class="t">Pike push-ups (épaules)</span><span class="s">3 séries</span></summary>
+      <div class="body">
+        <p>Fesses en l'air, corps en V inversé. Descends le haut de la tête vers le sol, un peu devant tes mains, puis pousse.</p>
+        <div class="steps"><em>Pieds au sol</em><i>›</i><em>Pieds sur une chaise</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--push)">
+      <summary><span class="n">4</span><span class="t">Dips</span><span class="s">3 séries</span></summary>
+      <div class="body">
+        <p>Chaises stables, calées contre un mur. Descends jusqu'à ce que tes coudes fassent un angle droit, buste légèrement penché vers l'avant.</p>
+        <div class="steps"><em>Sur une chaise, genoux pliés</em><i>›</i><em>Jambes tendues</em><i>›</i><em>Entre deux chaises</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--legs)">
+      <summary><span class="n">5</span><span class="t">Fente bulgare</span><span class="s">2 / jambe</span></summary>
+      <div class="body">
+        <p>Pied arrière posé sur une chaise. Descends le genou arrière vers le sol en gardant le buste droit.</p>
+        <div class="steps"><em>Poids du corps</em><i>›</i><em>Avec sac lesté</em></div>
+      </div>
+    </details>
+  </div>
+
+  <h2>Séance B</h2>
+  <div class="session">
+    <details class="ex" style="--c:var(--push)">
+      <summary><span class="n">1</span><span class="t">Pompes diamant (triceps)</span><span class="s">4 séries</span></summary>
+      <div class="body">
+        <p>Mains rapprochées sous la poitrine, pouces et index qui se touchent. Coudes le long du corps.</p>
+        <div class="steps"><em>Sur les genoux</em><i>›</i><em>Classiques</em><i>›</i><em>Avec sac lesté</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--pull)">
+      <summary><span class="n">2</span><span class="t">Tractions négatives</span><span class="s">4 séries</span></summary>
+      <div class="body">
+        <p>Monte en haut de la barre en sautant ou avec une chaise, puis descends en <b>5 secondes</b>. Pas de barre : fais du rowing inversé.</p>
+        <div class="steps"><em>Négatives</em><i>›</i><em>Avec élastique</em><i>›</i><em>Tractions complètes</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--push)">
+      <summary><span class="n">3</span><span class="t">Pompes pieds surélevés</span><span class="s">3 séries</span></summary>
+      <div class="body">
+        <p>Pieds sur une chaise ou le canapé. Elles ciblent le haut des pecs et les épaules.</p>
+        <div class="steps"><em>Pieds bas</em><i>›</i><em>Pieds plus hauts</em><i>›</i><em>Avec sac lesté</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--pull)">
+      <summary><span class="n">4</span><span class="t">Curl avec sac à dos</span><span class="s">3 séries</span></summary>
+      <div class="body">
+        <p>Sac rempli de bouteilles d'eau, tenu par la poignée ou les bretelles. Coudes collés au corps, monte sans balancer, descends lentement.</p>
+        <div class="steps"><em>Quelques bouteilles</em><i>›</i><em>+1 bouteille (1 L = 1 kg)</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--legs)">
+      <summary><span class="n">5</span><span class="t">Pont fessier sur une jambe</span><span class="s">2 / jambe</span></summary>
+      <div class="body">
+        <p>Sur le dos, un pied au sol, l'autre jambe tendue. Monte le bassin en serrant les fessiers, tiens 1 seconde en haut.</p>
+        <div class="steps"><em>Deux jambes</em><i>›</i><em>Une jambe</em><i>›</i><em>Pied sur une chaise</em></div>
+      </div>
+    </details>
+    <details class="ex" style="--c:var(--legs)">
+      <summary><span class="n">6</span><span class="t">Gainage hollow body</span><span class="s">3 x 20-40 s</span></summary>
+      <div class="body">
+        <p>Sur le dos, bas du dos plaqué au sol. Bras et jambes tendus, décollés du sol, en forme de banane.</p>
+        <div class="steps"><em>Genoux pliés</em><i>›</i><em>Jambes tendues</em><i>›</i><em>Bras tendus derrière la tête</em></div>
+      </div>
+    </details>
+  </div>
+
+  <h3>Matériel qui aide à progresser</h3>
+  <ul class="plain">
+    <li><b>Barre de traction</b> de porte, environ 20 €</li>
+    <li><b>Élastiques de résistance</b>, environ 15 à 20 €</li>
+    <li><b>Sac à dos + bouteilles d'eau</b>, gratuit</li>
+  </ul>
+</section>
+
+<!-- ============ NUTRITION ============ -->
+<section id="nutrition" role="tabpanel" aria-labelledby="t-nutrition" hidden>
+  <h2>Tes cibles par jour</h2>
+  <div class="targets">
+    <div><span class="k">Calories</span><span class="dots"></span><span class="v"><span class="hl">2 450</span> kcal</span></div>
+    <div><span class="k">Protéines</span><span class="dots"></span><span class="v"><span class="hl">120</span> g</span></div>
+    <div><span class="k">Lipides</span><span class="dots"></span><span class="v">50 g min.</span></div>
+    <div><span class="k">Glucides</span><span class="dots"></span><span class="v">le reste</span></div>
+  </div>
+  <p class="muted">Boulot physique : +300 à 500 kcal. Poids stable pendant 2 semaines : +150 à 200 kcal.</p>
+
+  <h2>Journée type</h2>
+  <table>
+    <thead><tr><th>Moment</th><th>Contenu</th><th class="r">Kcal</th><th class="r">Prot.</th></tr></thead>
+    <tbody>
+      <tr><td>Matin</td><td>Shake</td><td class="r">750</td><td class="r">45 g</td></tr>
+      <tr><td>Midi</td><td>Plat familial + extras</td><td class="r">600</td><td class="r">40 g</td></tr>
+      <tr><td>Goûter</td><td>Sandwich poulet ou thon</td><td class="r">500</td><td class="r">30 g</td></tr>
+      <tr><td>Soir</td><td>Plat familial + extras</td><td class="r">500</td><td class="r">25 g</td></tr>
+      <tr><td>Dessert</td><td>Fromage blanc + avoine + fruit</td><td class="r">250</td><td class="r">20 g</td></tr>
+    </tbody>
+    <tfoot><tr><td colspan="2">Total</td><td class="r">~2 600</td><td class="r">~160 g</td></tr></tfoot>
+  </table>
+  <p class="muted">Répartis tes protéines en 3 à 5 prises de 25 à 40 g.</p>
+
+  <h2>Au repas familial</h2>
+  <ul class="plain">
+    <li><b>Double portion de féculents</b> : 250 à 300 g cuits de pâtes, riz ou lentilles</li>
+    <li><b>30 à 40 g de protéines</b> : 120 à 150 g de viande ou poisson. Part trop petite : ajoute 2 œufs ou du thon</li>
+    <li><b>Un filet d'huile d'olive</b> sur ton assiette, environ 90 kcal la cuillère</li>
+    <li><b>Dessert</b> : 200 à 250 g de fromage blanc + 30 g d'avoine + banane ou miel</li>
+  </ul>
+  <p class="muted">Huile d'olive, noix et poissons gras sont des graisses insaturées : elles vont dans le sens des repas de ton père.</p>
+
+  <h2>Protéines pas chères</h2>
+  <table>
+    <thead><tr><th>Aliment</th><th>Pour ~25 g</th><th class="r">Coût</th></tr></thead>
+    <tbody>
+      <tr><td>Lentilles sèches</td><td>100 g cru</td><td class="r">~0,20 €</td></tr>
+      <tr><td>Soja texturé</td><td>50 g sec</td><td class="r">~0,35 €</td></tr>
+      <tr><td>Fromage blanc</td><td>300 g</td><td class="r">~0,60 €</td></tr>
+      <tr><td>Whey premier prix</td><td>30 g</td><td class="r">~0,70 €</td></tr>
+      <tr><td>Œufs</td><td>4</td><td class="r">~1 €</td></tr>
+      <tr><td>Thon, sardines</td><td>1 boîte</td><td class="r">~1-1,30 €</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">Prix indicatifs en marque distributeur. Pense aussi aux cuisses de poulet et au poisson surgelé.</p>
+
+  <h3>Le bon duo</h3>
+  <p><b>Céréales + légumineuses</b> : riz et lentilles, pâtes et pois chiches, semoule et pois chiches, pain et houmous. Chacune comble l'acide aminé qui manque à l'autre. Sur la journée, ça suffit.</p>
+
+  <h3>Autour de la séance</h3>
+  <p>Goûter <b>1 h 30 à 3 h avant</b>, ou après. Juste avant, prends plutôt une banane. Le total de la journée compte plus que l'heure.</p>
+
+  <h3>Les réflexes</h3>
+  <ul class="plain">
+    <li>Ne saute <b>jamais</b> de repas</li>
+    <li>Mise sur les aliments denses : shake, huile d'olive, oléagineux</li>
+    <li>La même quantité chaque jour vaut mieux que des gros écarts</li>
+    <li>Cuisine en grande quantité le week-end</li>
+  </ul>
+</section>
+
+<!-- ============ SHAKES ============ -->
+<section id="shakes" role="tabpanel" aria-labelledby="t-shakes" hidden>
+  <h2>Milkshakes</h2>
+  <div class="tips">
+    <ul class="plain">
+      <li><b>Mixe l'avoine à sec</b> d'abord, pour éviter les grumeaux</li>
+      <li><b>Congèle la banane</b> en rondelles la veille : texture crémeuse sans glace</li>
+      <li><b>Ajoute tes 4 g de créatine</b> dans n'importe quel shake</li>
+      <li><b>Sans whey</b> : 150 g de fromage blanc à la place, environ 12 g de protéines en moins</li>
+    </ul>
+  </div>
+
+  <article class="shake" style="--f:#C9A36A">
+    <div class="head"><h3>Base économique</h3><p class="macro"><span class="hl">770 kcal, 48 g de prot.</span> Environ 1,40 €</p></div>
+    <ul>
+      <li><span>Flocons d'avoine</span><span>60 g</span></li>
+      <li><span>Lait entier</span><span>300 ml</span></li>
+      <li><span>Banane</span><span>1</span></li>
+      <li><span>Beurre de cacahuète</span><span>20 g</span></li>
+      <li><span>Whey neutre ou vanille</span><span>30 g</span></li>
+    </ul>
+  </article>
+
+  <article class="shake" style="--f:#6B4226">
+    <div class="head"><h3>Choco-cacahuète</h3><p class="macro"><span class="hl">800 kcal, 50 g de prot.</span> Environ 1,50 €</p></div>
+    <ul>
+      <li><span>Flocons d'avoine</span><span>60 g</span></li>
+      <li><span>Lait entier bien froid</span><span>300 ml</span></li>
+      <li><span>Banane congelée</span><span>1</span></li>
+      <li><span>Beurre de cacahuète</span><span>20 g</span></li>
+      <li><span>Whey chocolat</span><span>30 g</span></li>
+      <li><span>Cacao non sucré</span><span>10 g</span></li>
+      <li><span>Sel</span><span>1 pincée</span></li>
+    </ul>
+    <p class="note">Le sel atténue l'amertume du cacao. Version moka : +1 c. à café de café soluble.</p>
+  </article>
+
+  <article class="shake" style="--f:#E0476B">
+    <div class="head"><h3>Fraise-vanille</h3><p class="macro"><span class="hl">820 kcal, 48 g de prot.</span> Environ 1,70 €</p></div>
+    <ul>
+      <li><span>Flocons d'avoine</span><span>60 g</span></li>
+      <li><span>Lait entier</span><span>300 ml</span></li>
+      <li><span>Fraises surgelées</span><span>100 g</span></li>
+      <li><span>Banane congelée</span><span>1</span></li>
+      <li><span>Whey vanille</span><span>30 g</span></li>
+      <li><span>Amandes ou poudre d'amande</span><span>20 g</span></li>
+      <li><span>Miel</span><span>1 c. à café</span></li>
+      <li><span>Extrait de vanille</span><span>quelques gouttes</span></li>
+    </ul>
+    <p class="note">Les fraises surgelées coûtent moins cher que les fraises fraîches hors saison et rendent le shake plus épais.</p>
+  </article>
+
+  <article class="shake" style="--f:#A5245A">
+    <div class="head"><h3>Framboise-cacahuète</h3><p class="macro"><span class="hl">820 kcal, 49 g de prot.</span> Environ 1,80 €</p></div>
+    <ul>
+      <li><span>Flocons d'avoine</span><span>60 g</span></li>
+      <li><span>Lait entier</span><span>300 ml</span></li>
+      <li><span>Framboises surgelées</span><span>100 g</span></li>
+      <li><span>Banane congelée</span><span>1</span></li>
+      <li><span>Beurre de cacahuète</span><span>20 g</span></li>
+      <li><span>Whey vanille</span><span>30 g</span></li>
+    </ul>
+    <p class="note">Le goût du sandwich américain « peanut butter and jelly ». L'acidité de la framboise équilibre la cacahuète.</p>
+  </article>
+</section>
+
+<!-- ============ SUIVI ============ -->
+<section id="suivi" role="tabpanel" aria-labelledby="t-suivi" hidden>
+  <h2>Mesurer</h2>
+  <ul class="plain">
+    <li>Pesée <b>3 à 4 fois par semaine</b>, le matin à jeun. Regarde la <b>moyenne</b></li>
+    <li>Chaque mois : photo (même lumière, même pose), tour de bras, poitrine et taille</li>
+    <li>Objectif : <span class="hl">+0,5 à 1 kg par mois</span>, environ <b>66-68 kg dans 6 mois</b></li>
+  </ul>
+
+  <h3>Ajuster</h3>
+  <table>
+    <thead><tr><th>Si</th><th>Alors</th></tr></thead>
+    <tbody>
+      <tr><td>Poids stable 2 semaines</td><td>+150 à 200 kcal</td></tr>
+      <tr><td>Plus de 1 kg par mois</td><td>Baisse un peu les calories</td></tr>
+      <tr><td>La taille grossit plus vite que les bras</td><td>Baisse un peu les calories</td></tr>
+      <tr><td>3 x 15 propres</td><td>Variante suivante ou sac lesté</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Compléments</h2>
+  <div class="box">
+    <h3>Créatine</h3>
+    <p><b>Monohydrate micronisée</b>, idéalement label Creapure. <b>3 à 5 g par jour</b>, tous les jours, même sans séance. Environ 15 à 25 € les 500 g, soit 3 à 5 mois.</p>
+    <p class="muted">Elle recharge l'énergie rapide du muscle : 1 à 2 reps de plus par série. Compte +1 à 2 kg d'eau dans le muscle au début.</p>
+  </div>
+  <div class="box">
+    <h3>Whey (facultative)</h3>
+    <p><b>Concentrée</b>, au moins 75 à 80 % de protéines. 25 à 30 g par jour suffisent. Isolat seulement si le lait te ballonne.</p>
+    <p class="muted">Aucune dépendance : si tu l'arrêtes, remplace-la par de la nourriture. Budget serré : la créatine passe avant.</p>
+  </div>
+  <div class="box no">
+    <h3>À éviter</h3>
+    <ul class="plain">
+      <li>Créatines « améliorées », gummies et mélanges</li>
+      <li>BCAA, boosters de testostérone, brûleurs</li>
+      <li>Plus de protéines que nécessaire</li>
+      <li>S'entraîner tous les jours</li>
+    </ul>
+  </div>
+
+  <h2>Récupération</h2>
+  <ul class="plain">
+    <li><b>7 à 9 h de sommeil</b> : c'est là que le muscle se répare</li>
+    <li>Les jours sans séance font partie du programme</li>
+    <li>Coup dur : un tiers du volume suffit pour garder ton muscle</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>Repères généraux pour une personne en bonne santé, pas un avis médical.</footer>
+
+<nav>
+  <div role="tablist" aria-label="Sections">
+    <button role="tab" id="t-seances" aria-controls="seances" aria-selected="true">Séances</button>
+    <button role="tab" id="t-nutrition" aria-controls="nutrition" aria-selected="false">Nutrition</button>
+    <button role="tab" id="t-shakes" aria-controls="shakes" aria-selected="false">Shakes</button>
+    <button role="tab" id="t-suivi" aria-controls="suivi" aria-selected="false">Suivi</button>
+  </div>
+</nav>
+
+<script>
+const tabs = document.querySelectorAll('[role="tab"]');
+tabs.forEach(tab => tab.addEventListener('click', () => {
+  tabs.forEach(t => {
+    const on = t === tab;
+    t.setAttribute('aria-selected', on);
+    document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+  });
+  window.scrollTo({top: 0});
+}));
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
